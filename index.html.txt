@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newspaper Save the Date</title>
+    <style>
+        /* Import Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Antonio:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Great+Vibes&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #2c2c2c; 
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            justify-content: flex-start; 
+            min-height: 100vh;
+            font-family: 'Merriweather', serif;
+            padding: 30px 0; 
+            overflow-x: hidden; 
+        }
+
+        /* --- 3D Book Container Styles --- */
+        .carousel-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .flip-scene {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 58 / 76;
+            min-height: 680px; 
+            perspective: 2500px; 
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        /* --- Common Card Styles --- */
+        .card {
+            background-color: #fcfbf4; 
+            width: 100%;
+            height: 100%;
+            padding: 25px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            color: #1a1a1a;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            border: 1px solid #dcdcdc;
+            position: absolute;
+            top: 0;
+            left: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* Newspaper border effect */
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        /* --- PAGE 1 (Front Cover) --- */
+        .card-front {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden; 
+            z-index: 2; 
+            transform-origin: left center; 
+        }
+
+        /* --- PAGE 2 (Inside Right Page) --- */
+        .card-back {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            z-index: 1; 
+            transform: rotateY(0deg); 
+        }
+
+        /* --- Book Page Turn Animations --- */
+        .turn-forward { animation: bookTurnForward 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .turn-backward { animation: bookTurnBackward 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        @keyframes bookTurnForward {
+            0% { transform: rotateY(0deg) rotateX(0deg) scale(1); }
+            40% { transform: rotateY(-60deg) rotateX(4deg) scale(1.02); box-shadow: 25px 20px 40px rgba(0,0,0,0.6); }
+            100% { transform: rotateY(-180deg) rotateX(0deg) scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        }
+
+        @keyframes bookTurnBackward {
+            0% { transform: rotateY(-180deg) rotateX(0deg) scale(1); }
+            60% { transform: rotateY(-60deg) rotateX(4deg) scale(1.02); box-shadow: 25px 20px 40px rgba(0,0,0,0.6); }
+            100% { transform: rotateY(0deg) rotateX(0deg) scale(1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        }
+
+        /* --- Pagination Dots --- */
+        .pagination { display: flex; gap: 12px; margin-top: 15px; }
+        .dot { width: 10px; height: 10px; background-color: #555; border-radius: 50%; opacity: 0.5; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .dot.active { background-color: #fcfbf4; opacity: 1; transform: scale(1.3); }
+
+        /* --- Header Section (Newspaper Aesthetic) --- */
+        .top-ears {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Antonio', sans-serif;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1a1a1a;
+            padding-bottom: 3px;
+            margin-bottom: 5px;
+        }
+
+        .ear-box {
+            border: 1px solid #1a1a1a;
+            padding: 2px 4px;
+            letter-spacing: 0.5px;
+            background: transparent;
+            color: #1a1a1a;
+            font-family: 'Antonio', sans-serif;
+            font-size: 0.55rem;
+            text-transform: uppercase;
+        }
+
+        /* 讓方格按鈕有互動效果 */
+        button.ear-box {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button.ear-box:hover {
+            background-color: #1a1a1a;
+            color: #fcfbf4;
+        }
+
+        .top-label {
+            font-family: 'Merriweather', serif;
+            font-size: 0.6rem; 
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .masthead {
+            text-align: center;
+            font-family: 'UnifrakturMaguntia', cursive;
+            font-size: 2.5rem; 
+            margin: 2px 0 2px 0;
+            line-height: 1;
+            color: #111;
+        }
+
+        .meta-bar {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Merriweather', serif;
+            font-size: 0.6rem; 
+            font-weight: 700;
+            margin-bottom: 12px;
+            border-top: 3px double #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+            padding: 4px 0;
+            flex-shrink: 0;
+        }
+
+        /* --- NEW: Front Page 2-Column Grid for Portrait Photo --- */
+        .front-body-grid {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr; /* Text column slightly narrower than photo */
+            gap: 15px;
+            flex-grow: 1;
+            min-height: 0; /* Prevents overflow */
+            margin-bottom: 10px;
+        }
+
+        .front-left-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-right: 12px;
+        }
+
+        .front-right-col {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-width: 0;
+        }
+
+        /* --- Headline Section (Left Column) - REDESIGNED --- */
+        .headline-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: auto;
+            margin-bottom: auto; /* Vertically center to balance blank space */
+        }
+
+        .main-headline {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .name-1 {
+            font-family: 'Playfair Display', serif; 
+            font-style: italic;
+            font-size: 3.8rem; /* 顯著放大字體以填滿空間 */
+            font-weight: 900;
+            line-height: 0.85;
+            color: #111;
+            letter-spacing: -1px;
+            align-self: center; /* 水平置中 */
+        }
+
+        .name-amp {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 2.2rem;
+            color: #777;
+            line-height: 0.8;
+            margin: 4px 0; 
+            align-self: center; /* 置中對齊，完美過渡 */
+        }
+
+        .name-2 {
+            font-family: 'Playfair Display', serif; 
+            font-style: italic;
+            font-size: 3.8rem; /* 顯著放大字體以填滿空間 */
+            font-weight: 900;
+            line-height: 0.85;
+            color: #111;
+            letter-spacing: -1px;
+            align-self: center; /* 水平置中 */
+        }
+
+        .sub-headline {
+            font-family: 'Great Vibes', cursive;
+            font-size: 1.6rem; 
+            color: #333;
+            margin-top: 5px;
+            line-height: 1.1;
+            text-align: center; /* 置中對齊，穩住上方大字 */
+            width: 100%;
+        }
+
+        /* --- Photo Section & Caption (Right Column) --- */
+        .photo-container {
+            width: 100%;
+            flex-grow: 1; /* Automatically stretches height */
+            background-color: #fff;
+            margin-bottom: 4px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid #1a1a1a; 
+            padding: 2px; 
+            -webkit-transform: translateZ(0);
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            
+            /* 黑白轉彩色特效 */
+            filter: grayscale(80%) sepia(20%);
+            transition: filter 0.5s ease-in-out; 
+            cursor: pointer; 
+        }
+
+        .photo-container img:hover, 
+        .photo-container img:active {
+            filter: grayscale(0%) sepia(0%);
+        }
+
+        .photo-caption {
+            font-family: 'Antonio', sans-serif;
+            font-size: 0.55rem;
+            color: #444;
+            text-align: left;
+            padding: 2px 0 4px 0;
+            border-bottom: 1px solid #ccc;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- Body Text Details (Left Column) --- */
+        .front-details {
+            border-top: 3px double #1a1a1a; 
+            padding-top: 10px;
+        }
+
+        .info-header {
+            font-family: 'Playfair Display', serif; 
+            font-style: italic;
+            font-size: 1rem; 
+            font-weight: 900;
+            border-bottom: 1px solid #1a1a1a;
+            margin-bottom: 6px;
+            padding-bottom: 2px;
+            color: #1a1a1a;
+        }
+
+        .info-details {
+            margin-bottom: 15px;
+            font-size: 0.75rem; 
+            line-height: 1.4;
+            text-align: left; 
+        }
+
+        .venue-name {
+            font-weight: 900;
+            display: block;
+            margin-bottom: 2px;
+            font-size: 0.85rem; 
+            font-family: 'Antonio', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .timeline-row {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 4px;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 2px;
+        }
+
+        .timeline-time {
+            font-family: 'Antonio', sans-serif;
+            font-weight: 700;
+            width: 60px; 
+            color: #1a1a1a;
+            flex-shrink: 0;
+        }
+
+        /* --- Footer Section --- */
+        .footer-bar {
+            color: #1a1a1a;
+            padding: 4px 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-family: 'Antonio', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.6rem; 
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        /* --- Page 2 Specific Styles --- */
+        .card-back .masthead { font-size: 2.8rem; margin-bottom: 5px; margin-top: 2px; } 
+        .card-back .info-header { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; font-weight: 900; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .card-back .map-placeholder { width: 100%; height: 220px; flex-grow: 0; margin-bottom: 10px; border: 2px solid #1a1a1a; padding: 2px; background: white; -webkit-transform: translateZ(1px); }
+        .card-back .transport-grid { display: grid; gap: 15px; margin-bottom: 10px; flex-shrink: 0; }
+        .card-back .transport-item { display: flex; gap: 10px; align-items: flex-start; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .card-back .transport-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .card-back .transport-icon { width: 35px; height: 35px; background-color: #1a1a1a; color: #fcfbf4; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 1.2rem; border-radius: 0px; flex-shrink: 0; }
+        .card-back .transport-text h4 { font-family: 'Antonio', sans-serif; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 2px; color: #1a1a1a; font-weight: 700; }
+        .card-back .transport-text p { font-size: 0.65rem; color: #333; line-height: 1.3; margin-bottom: 0; }
+
+        /* --- UI Elements --- */
+        .scroll-tip { color: #fcfbf4; font-family: 'Merriweather', sans-serif; font-size: 0.8rem; margin-top: 10px; opacity: 0.7; }
+
+    </style>
+</head>
+<body>
+
+    <div class="carousel-wrapper">
+        <div class="flip-scene" id="flip-scene">
+            
+            <!-- PAGE 2: Transportation (Back Card) -->
+            <div class="card card-back" id="transport-card">
+                <div style="flex-shrink: 0;">
+                    <div class="top-ears">
+                        <div class="ear-box" id="trans-ear1">Local News</div>
+                        <div class="top-label" id="trans-label">Travel Guide</div>
+                        <!-- 融入方格的翻譯按鈕 -->
+                        <button class="ear-box" id="btn-trans-2" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
+                    </div>
+                    <div class="masthead" id="trans-title">Transportation</div>
+                    
+                    <div class="meta-bar">
+                        <span id="trans-loc">Hong Kong Science Park</span>
+                        <span id="trans-sub">Getting There</span>
+                    </div>
+                </div>
+
+                <div class="map-placeholder">
+                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+                     <iframe 
+                        src="https://maps.google.com/maps?q=PARC88+Hong+Kong+Science+Park&t=&z=17&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <div style="flex-shrink: 0;">
+                    <div class="info-header" id="trans-header" style="text-align: center;">How to get to PARC88</div>
+
+                    <div class="transport-grid">
+                        <div class="transport-item">
+                            <div class="transport-icon">M</div>
+                            <div class="transport-text">
+                                <h4 id="mtr-title">By MTR & Bus</h4>
+                                <p id="mtr-text">Take the MTR to <strong>University Station (Exit B)</strong>. Then take KMB Bus <strong>272K</strong> or Green Minibus <strong>27A</strong> to Science Park.</p>
+                            </div>
+                        </div>
+
+                        <div class="transport-item">
+                            <div class="transport-icon">B</div>
+                            <div class="transport-text">
+                                <h4 id="bus-title">By Bus</h4>
+                                <p id="bus-text">Routes available: <strong>272K</strong> (University Stn), <strong>272A</strong> (University Stn), <strong>272S</strong> (Diamond Hill/Kwun Tong).</p>
+                            </div>
+                        </div>
+
+                        <div class="transport-item">
+                            <div class="transport-icon">P</div>
+                            <div class="transport-text">
+                                <h4 id="car-title">Parking Info</h4>
+                                <p id="car-text">Guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-bar">
+                        <span id="footer-1">Safe Travels</span>
+                        <span>▪</span>
+                        <span id="footer-2">See You There</span>
+                        <span>▪</span>
+                        <span id="footer-3">Safe Travels</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE 1: Invitation (Front Card) -->
+            <div class="card card-front">
+                <div style="flex-shrink: 0;">
+                    <!-- Newspaper Ears & Header -->
+                    <div class="top-ears">
+                        <div class="ear-box" id="p1-weather">Weather: Sunny</div>
+                        <div class="top-label" id="p1-label">Extra! Extra!</div>
+                        <!-- 融入方格的翻譯按鈕 -->
+                        <button class="ear-box" id="btn-trans-1" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
+                    </div>
+
+                    <div class="masthead" id="p1-masthead">Wedding Post</div>
+                    
+                    <div class="meta-bar">
+                        <span id="p1-loc">Hong Kong</span>
+                        <span id="p1-date">Friday, April 3, 2026</span>
+                    </div>
+                </div>
+
+                <!-- NEW: 2-Column Front Page Layout -->
+                <div class="front-body-grid">
+                    
+                    <!-- Left Text Column -->
+                    <div class="front-left-col">
+                        <div class="headline-container">
+                            <div class="main-headline">
+                                <span class="name-1">Eric</span>
+                                <span class="name-amp">&</span>
+                                <span class="name-2">Elly</span>
+                            </div>
+                            <div class="sub-headline" id="p1-subhead">begin their journey</div>
+                        </div>
+                        
+                        <div class="front-details">
+                            <div class="info-header" id="p1-venue-header">The Venue</div>
+                            <div class="info-details">
+                                <span class="venue-name">PARC88</span>
+                                <span id="p1-address">
+                                    Shops S040A G/F Lakeside 2,<br>
+                                    10 Science Park West Avenue,<br>
+                                    Phase 2, HK Science Park,<br>
+                                    Pak Shek Kok, NT
+                                </span>
+                            </div>
+
+                            <div class="info-header" id="p1-timeline-header">Timeline</div>
+                            <div class="info-details" style="margin-bottom: 0;">
+                                <div class="timeline-row">
+                                    <span class="timeline-time">11:00 AM</span>
+                                    <span id="p1-time-1">Reception</span>
+                                </div>
+                                <div class="timeline-row">
+                                    <span class="timeline-time">11:30 AM</span>
+                                    <span id="p1-time-2">Ceremony</span>
+                                </div>
+                                <div class="timeline-row">
+                                    <span class="timeline-time">12:30 PM</span>
+                                    <span id="p1-time-3">Banquet</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Portrait Photo Column -->
+                    <div class="front-right-col">
+                        <div class="photo-container">
+                            <!-- Updated Image Source -->
+                            <img id="main-photo" src="WhatsApp Image 2026-03-03 at 11.07.25 AM.jpeg" onerror="this.src='https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" alt="Eric & Elly Wedding Photo">
+                        </div>
+                        <div class="photo-caption" id="p1-caption">▲ Hover to reveal colour.</div>
+                    </div>
+
+                </div>
+
+                <div style="flex-shrink: 0;">
+                    <div class="footer-bar">
+                        <span id="p1-footer-1">The Best Day Ever</span>
+                        <span>▪</span>
+                        <span id="p1-footer-2">The Best Day Ever</span>
+                        <span>▪</span>
+                        <span id="p1-footer-3">The Best Day Ever</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="pagination">
+            <div class="dot active" id="dot-0" onclick="flipToPage(0)"></div>
+            <div class="dot" id="dot-1" onclick="flipToPage(1)"></div>
+        </div>
+        
+        <div class="scroll-tip">Swipe or click dots to flip pages →</div>
+    </div>
+
+    <script>
+        // --- Translation Logic ---
+        let isChinese = false;
+
+        const setText = (id, text, isHtml = false) => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (isHtml) el.innerHTML = text;
+                else el.innerText = text;
+            }
+        };
+        
+        window.toggleLanguage = (event) => {
+            if(event) event.stopPropagation(); 
+            
+            isChinese = !isChinese;
+            
+            const content = {
+                en: {
+                    p1Weather: "Weather: Sunny",
+                    p1Label: "Extra! Extra!",
+                    p1Masthead: "Wedding Post",
+                    p1Loc: "Hong Kong",
+                    p1Date: "Friday, April 3, 2026",
+                    p1Subhead: "begin their journey",
+                    p1Caption: "▲ Hover to reveal colour.",
+                    p1VenueHeader: "The Venue",
+                    p1Address: "Shops S040A G/F Lakeside 2,<br>10 Science Park West Avenue,<br>Phase 2, HK Science Park,<br>Pak Shek Kok, NT",
+                    p1TimelineHeader: "Timeline",
+                    p1Time1: "Reception",
+                    p1Time2: "Ceremony",
+                    p1Time3: "Banquet",
+                    p1Footer: "The Best Day Ever",
+                    
+                    transEar1: "Local News",
+                    label: "Travel Guide",
+                    title: "Transportation",
+                    loc: "Hong Kong Science Park",
+                    sub: "Getting There",
+                    header: "How to get to PARC88",
+                    mtrTitle: "By MTR & Bus",
+                    mtrText: "Take the MTR to <strong>University Station (Exit B)</strong>. Then take KMB Bus <strong>272K</strong> or Green Minibus <strong>27A</strong> to Science Park.",
+                    busTitle: "By Bus",
+                    busText: "Routes available: <strong>272K</strong> (University Stn), <strong>272A</strong> (University Stn), <strong>272S</strong> (Diamond Hill/Kwun Tong).",
+                    carTitle: "Parking Info",
+                    carText: "Guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.",
+                    footer1: "Safe Travels",
+                    footer2: "See You There",
+                    scrollTip: "Swipe or click dots to flip pages →"
+                },
+                zh: {
+                    p1Weather: "天氣：晴朗",
+                    p1Label: "號外！號外！",
+                    p1Masthead: "婚禮囍報",
+                    p1Loc: "香港",
+                    p1Date: "2026年4月3日 (星期五)",
+                    p1Subhead: "展開人生新篇章",
+                    p1Caption: "▲ 長按或游標懸停顯示彩色。",
+                    p1VenueHeader: "婚禮場地",
+                    p1Address: "新界白石角香港科學園第二期<br>科技大道西10號<br>湖畔2座地下S040A舖",
+                    p1TimelineHeader: "婚禮流程",
+                    p1Time1: "迎賓",
+                    p1Time2: "證婚儀式",
+                    p1Time3: "婚宴",
+                    p1Footer: "最美好的一天",
+                    
+                    transEar1: "本地資訊",
+                    label: "交通指南",
+                    title: "交通資訊",
+                    loc: "香港科學園",
+                    sub: "前往方法",
+                    header: "前往 PARC88",
+                    mtrTitle: "港鐵及巴士",
+                    mtrText: "乘搭港鐵至<strong>大學站（B出口）</strong>，轉乘九巴 <strong>272K</strong> 或綠色專線小巴 <strong>27A</strong> 前往科學園。",
+                    busTitle: "巴士",
+                    busText: "可選路線：<strong>272K</strong>（大學站）、<strong>272A</strong>（大學站）、<strong>272S</strong>（鑽石山/觀塘）。",
+                    carTitle: "泊車資訊",
+                    carText: "訪客可停泊於<strong>二期停車場</strong>（地庫）。B2層設有電動車充電站。",
+                    footer1: "旅途愉快",
+                    footer2: "到時見",
+                    scrollTip: "左右滑動或點擊翻頁 →"
+                }
+            };
+
+            const lang = isChinese ? content.zh : content.en;
+
+            // Update content
+            setText('p1-weather', lang.p1Weather);
+            setText('p1-label', lang.p1Label);
+            setText('p1-masthead', lang.p1Masthead);
+            setText('p1-loc', lang.p1Loc);
+            setText('p1-date', lang.p1Date);
+            setText('p1-subhead', lang.p1Subhead);
+            setText('p1-caption', lang.p1Caption);
+            setText('p1-venue-header', lang.p1VenueHeader);
+            setText('p1-address', lang.p1Address, true);
+            setText('p1-timeline-header', lang.p1TimelineHeader);
+            setText('p1-time-1', lang.p1Time1);
+            setText('p1-time-2', lang.p1Time2);
+            setText('p1-time-3', lang.p1Time3);
+            setText('p1-footer-1', lang.p1Footer);
+            setText('p1-footer-2', lang.p1Footer);
+            setText('p1-footer-3', lang.p1Footer);
+
+            setText('trans-ear1', lang.transEar1);
+            setText('trans-label', lang.label);
+            setText('trans-title', lang.title);
+            setText('trans-loc', lang.loc);
+            setText('trans-sub', lang.sub);
+            setText('trans-header', lang.header);
+            setText('mtr-title', lang.mtrTitle);
+            setText('mtr-text', lang.mtrText, true);
+            setText('bus-title', lang.busTitle);
+            setText('bus-text', lang.busText, true);
+            setText('car-title', lang.carTitle);
+            setText('car-text', lang.carText, true);
+            setText('footer-1', lang.footer1);
+            setText('footer-2', lang.footer2);
+            setText('footer-3', lang.footer1);
+
+            document.querySelector('.scroll-tip').innerHTML = lang.scrollTip;
+
+            // Update Translate Buttons
+            const btnText = isChinese ? "Translate 🇬🇧" : "Translate 🇭🇰";
+            setText('btn-trans-1', btnText);
+            setText('btn-trans-2', btnText);
+        };
+
+        // --- Book Page Turn Logic ---
+        let currentPage = 0;
+        const cardFront = document.querySelector('.card-front');
+        const dot0 = document.getElementById('dot-0');
+        const dot1 = document.getElementById('dot-1');
+
+        window.flipToPage = (index) => {
+            if (currentPage === index) return; 
+            
+            currentPage = index;
+            
+            // 重置動畫狀態
+            cardFront.classList.remove('turn-forward', 'turn-backward');
+            void cardFront.offsetWidth; 
+
+            if (currentPage === 1) {
+                cardFront.classList.add('turn-forward');
+                dot0.classList.remove('active');
+                dot1.classList.add('active');
+            } else {
+                cardFront.classList.add('turn-backward');
+                dot1.classList.remove('active');
+                dot0.classList.add('active');
+            }
+        };
+
+        // Touch Swipe Handling for Flip
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const flipScene = document.getElementById('flip-scene');
+
+        flipScene.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        flipScene.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const swipeThreshold = 50; 
+            if (touchStartX - touchEndX > swipeThreshold) {
+                flipToPage(1);
+            } else if (touchEndX - touchStartX > swipeThreshold) {
+                flipToPage(0);
+            }
+        }
+    </script>
+</body>
+</html>
