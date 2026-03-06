@@ -16,7 +16,6 @@
         }
 
         body {
-            /* 保持純白/透明無背景，凸顯報紙本體 */
             background-color: transparent; 
             display: flex;
             flex-direction: column; 
@@ -49,7 +48,6 @@
 
         /* --- Common Card Styles --- */
         .card {
-            /* 復古報紙底色與紋理保持不變 */
             background-color: #f0e6d2; 
             width: 100%;
             height: 100%;
@@ -78,14 +76,27 @@
             pointer-events: none;
         }
 
-        /* --- PAGE 1 & 2 Setup --- */
-        .card-front, .card-back {
+        /* --- 3D Structure for 3 Pages --- */
+        .card-front-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            z-index: 2;
+        }
+
+        .card-front, .card-inside-left, .card-back {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden; 
         }
-        .card-front { z-index: 2; transform-origin: left center; }
+        
+        .card-front { transform: rotateY(0deg); }
+        .card-inside-left { transform: rotateY(180deg); } 
         .card-back { z-index: 1; transform: rotateY(0deg); }
 
         /* --- Book Page Turn Animations --- */
@@ -133,15 +144,29 @@
             text-transform: uppercase;
         }
 
-        button.ear-box { cursor: pointer; transition: all 0.2s ease; }
-        button.ear-box:hover { background-color: #1a1a1a; color: #fcfbf4; }
+        .btn-translate {
+            background-color: #1a1a1a !important;
+            color: #fcfbf4 !important;
+            font-weight: 700;
+            border: 1px solid #1a1a1a;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-translate:hover {
+            background-color: #fcfbf4 !important;
+            color: #1a1a1a !important;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+        }
 
         .top-label { font-family: 'Merriweather', serif; font-size: 0.6rem; letter-spacing: 2px; font-weight: 700; }
 
         .masthead {
             text-align: center;
             font-family: 'UnifrakturMaguntia', cursive;
-            font-size: 2.3rem; /* 稍微縮小報頭以節省空間 */
+            font-size: 2.3rem; 
             margin: 2px 0 2px 0;
             line-height: 1;
             color: #111;
@@ -153,24 +178,24 @@
             font-family: 'Merriweather', serif;
             font-size: 0.6rem; 
             font-weight: 700;
-            margin-bottom: 8px; /* 縮小間距 */
+            margin-bottom: 8px; 
             border-top: 3px double #1a1a1a;
             border-bottom: 1px solid #1a1a1a;
             padding: 3px 0;
             flex-shrink: 0;
         }
 
-        /* --- RE-DESIGNED: Compact Horizontal Headline --- */
+        /* --- Headline --- */
         .headline-container {
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             flex-shrink: 0;
         }
 
         .main-headline {
             font-family: 'Playfair Display', serif; 
             font-style: italic;
-            font-size: 2.8rem; /* 改為單行橫式排版 */
+            font-size: 2.8rem; 
             font-weight: 900;
             line-height: 1;
             color: #111;
@@ -194,16 +219,16 @@
             margin-top: -3px;
         }
 
-        /* --- Photo Section & Caption (Optimized for grand portrait photo) --- */
+        /* --- 🔴 Photo Section (還原為直式滿版排版) --- */
         .photo-container {
             width: 100%;
-            flex: 1 1 0%; /* 自動吸收所有剩餘空間，消除留白 */
-            min-height: 0; /* 解決部分瀏覽器的排版 bug */
+            flex: 1 1 0%; /* 自動填滿剩餘的垂直空間 */
+            min-height: 0; 
             background-color: #fff;
             margin-bottom: 4px;
             overflow: hidden;
             position: relative;
-            border: 3px double #1a1a1a; /* 古典雙實線相框 */
+            border: 3px double #1a1a1a; 
             padding: 2px; 
             -webkit-transform: translateZ(0);
         }
@@ -212,17 +237,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            /* 🔴 關鍵定位：重心放在中上方偏一點點，確保大笨鐘與全身入鏡 */
-            object-position: center 35%; 
-            
-            filter: grayscale(80%) sepia(20%);
-            transition: filter 0.5s ease-in-out; 
-            cursor: pointer; 
-        }
-
-        .photo-container img:hover, 
-        .photo-container img:active {
-            filter: grayscale(0%) sepia(0%);
+            object-position: center 25%; /* 對焦在偏上方，保留大笨鐘與臉部 */
+            /* 保持純彩色，無黑白特效 */
         }
 
         .photo-caption {
@@ -232,12 +248,12 @@
             text-align: left;
             padding: 2px 0 3px 0;
             border-bottom: 1px solid #ccc;
-            margin-bottom: 12px; /* 稍微增加底部間距，讓排版更有呼吸感 */
+            margin-bottom: 12px; 
             letter-spacing: 0.5px;
             flex-shrink: 0;
         }
 
-        /* --- Body Text Details (Compact Bottom Grid) --- */
+        /* --- Body Text Details --- */
         .details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr; 
@@ -265,7 +281,7 @@
 
         .info-details {
             margin-bottom: 0;
-            font-size: 0.7rem; /* 微調字體大小以適應緊湊排版 */
+            font-size: 0.7rem; 
             line-height: 1.3;
             text-align: left; 
         }
@@ -310,19 +326,31 @@
             margin-top: auto;
         }
 
-        /* --- Page 2 Specific Styles --- */
-        .card-back .masthead { font-size: 2.8rem; margin-bottom: 5px; margin-top: 2px; } 
-        .card-back .info-header { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; font-weight: 900; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
-        .card-back .map-placeholder { 
-            width: 100%; 
-            flex: 1 1 0%; /* 讓地圖也自動填滿第二頁的空白 */
-            min-height: 200px; 
-            margin-bottom: 15px; 
-            border: 2px solid #1a1a1a; 
-            padding: 2px; 
-            background: white; 
-            -webkit-transform: translateZ(1px); 
+        /* Google 行事曆按鈕樣式 */
+        .calendar-btn {
+            background-color: #1a1a1a;
+            color: #fcfbf4 !important;
+            padding: 4px 12px;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-weight: bold;
+            font-family: 'Merriweather', serif; 
+            text-transform: none; 
+            letter-spacing: normal;
         }
+        .calendar-btn:hover {
+            background-color: #444;
+            transform: scale(1.05);
+        }
+
+        /* --- Page Specific Styles --- */
+        .card-back .masthead, .card-inside-left .masthead { font-size: 2.8rem; margin-bottom: 5px; margin-top: 2px; } 
+        .card-back .info-header { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.1rem; font-weight: 900; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
+        .card-back .map-placeholder { width: 100%; height: 220px; flex-grow: 0; margin-bottom: 10px; border: 2px solid #1a1a1a; padding: 2px; background: white; -webkit-transform: translateZ(1px); }
         .card-back .transport-grid { display: grid; gap: 15px; margin-bottom: 10px; flex-shrink: 0; }
         .card-back .transport-item { display: flex; gap: 10px; align-items: flex-start; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
         .card-back .transport-item:last-child { border-bottom: none; padding-bottom: 0; }
@@ -340,13 +368,13 @@
     <div class="carousel-wrapper">
         <div class="flip-scene" id="flip-scene">
             
-            <!-- PAGE 2: Transportation (Back Card) -->
+            <!-- PAGE 3: Transportation (Back Card) -->
             <div class="card card-back" id="transport-card">
                 <div style="flex-shrink: 0;">
                     <div class="top-ears">
                         <div class="ear-box" id="trans-ear1">Local News</div>
                         <div class="top-label" id="trans-label">Travel Guide</div>
-                        <button class="ear-box" id="btn-trans-2" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
+                        <button class="ear-box btn-translate" id="btn-trans-3" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
                     </div>
                     <div class="masthead" id="trans-title">Transportation</div>
                     
@@ -357,16 +385,16 @@
                 </div>
 
                 <div class="map-placeholder">
-                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
-                     <iframe 
-                        src="https://maps.google.com/maps?q=PARC88+Hong+Kong+Science+Park&t=&z=17&ie=UTF8&iwloc=&output=embed" 
-                        width="100%" 
-                        height="100%" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
+                    <div style="position: relative; width: 100%; height: 100%; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+                        <iframe 
+                            src="https://maps.google.com/maps?q=PARC88+Hong+Kong+Science+Park&t=&z=17&ie=UTF8&iwloc=&output=embed" 
+                            style="position: absolute; top: -65px; left: 0; width: 100%; height: calc(100% + 65px); border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
                 </div>
 
                 <div style="flex-shrink: 0;">
@@ -393,7 +421,7 @@
                             <div class="transport-icon">P</div>
                             <div class="transport-text">
                                 <h4 id="car-title">Parking Info</h4>
-                                <p id="car-text">Guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.</p>
+                                <p id="car-text">Paid guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.</p>
                             </div>
                         </div>
                     </div>
@@ -408,79 +436,99 @@
                 </div>
             </div>
 
-            <!-- PAGE 1: Invitation (Front Card) -->
-            <div class="card card-front">
-                <div style="flex-shrink: 0;">
-                    <div class="top-ears">
-                        <div class="ear-box" id="p1-weather">Weather: Sunny</div>
-                        <div class="top-label" id="p1-label">Extra! Extra!</div>
-                        <button class="ear-box" id="btn-trans-1" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
+            <!-- THE FLIP CONTAINER: Holds Cover and the new Photo Gallery inside -->
+            <div class="card-front-container" id="front-page-wrapper">
+                
+                <!-- PAGE 1: Invitation (Front Face) -->
+                <div class="card card-front">
+                    <div style="flex-shrink: 0;">
+                        <div class="top-ears">
+                            <div class="ear-box" id="p1-weather">Weather: Sunny & Joyful</div>
+                            <div class="top-label" id="p1-label">Extra! Extra!</div>
+                            <button class="ear-box btn-translate" id="btn-trans-1" onclick="toggleLanguage(event)">Translate 🇭🇰</button>
+                        </div>
+
+                        <div class="masthead" id="p1-masthead">Wedding Post</div>
+                        
+                        <div class="meta-bar">
+                            <span id="p1-loc">Hong Kong</span>
+                            <span id="p1-date">Friday, April 3, 2026</span>
+                        </div>
+
+                        <!-- 🔴 大標題移回上方，適合直式相片的經典報紙排版 -->
+                        <div class="headline-container">
+                            <div class="main-headline">
+                                <span>Eric</span>
+                                <span class="ampersand">&</span>
+                                <span>Elly</span>
+                            </div>
+                            <div class="sub-headline" id="p1-subhead">begin their journey</div>
+                        </div>
                     </div>
 
-                    <div class="masthead" id="p1-masthead">Wedding Post</div>
+                    <!-- 🔴 相片恢復為直式延伸排版，檔案名稱使用原本的直式相片 -->
+                    <div class="photo-container">
+                        <img id="main-photo" src="WhatsApp Image 2026-03-03 at 11.07.25 AM.jpeg" onerror="this.src='https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" alt="Eric & Elly Wedding Photo">
+                    </div>
                     
-                    <div class="meta-bar">
-                        <span id="p1-loc">London, UK</span>
-                        <span id="p1-date">Friday, April 3, 2026</span>
-                    </div>
+                    <div class="photo-caption" id="p1-caption">Pictured: The happy couple in London.</div>
 
-                    <div class="headline-container">
-                        <div class="main-headline">
-                            <span>Eric</span>
-                            <span class="ampersand">&</span>
-                            <span>Elly</span>
-                        </div>
-                        <div class="sub-headline" id="p1-subhead">begin their journey</div>
-                    </div>
-                </div>
+                    <div style="flex-shrink: 0;">
+                        
+                        <div class="details-grid">
+                            <div class="col-left">
+                                <div class="info-header" id="p1-venue-header">The Venue</div>
+                                <div class="info-details">
+                                    <span class="venue-name">PARC88</span>
+                                    <span id="p1-address">
+                                        Shops S040A G/F Lakeside 2,<br>
+                                        10 Science Park West Avenue,<br>
+                                        Phase 2, HK Science Park,<br>
+                                        Pak Shek Kok, NT
+                                    </span>
+                                </div>
+                            </div>
 
-                <div class="photo-container">
-                    <img id="main-photo" src="WEDDING_PHOTO.jpeg" onerror="this.src='https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" alt="Eric & Elly Wedding Photo in London">
-                </div>
-                <div class="photo-caption" id="p1-caption">▲ Hover to reveal colour. Pictured: The happy couple in London.</div>
-
-                <div style="flex-shrink: 0;">
-                    <div class="details-grid">
-                        <div class="col-left">
-                            <div class="info-header" id="p1-venue-header">The Venue</div>
-                            <div class="info-details">
-                                <span class="venue-name">PARC88</span>
-                                <span id="p1-address">
-                                    Shops S040A G/F Lakeside 2,<br>
-                                    10 Science Park West Avenue,<br>
-                                    Phase 2, HK Science Park,<br>
-                                    Pak Shek Kok, NT
-                                </span>
+                            <div class="col-right">
+                                <div class="info-header" id="p1-timeline-header">Timeline</div>
+                                <div class="info-details">
+                                    <div class="timeline-row">
+                                        <span class="timeline-time">11:00 AM</span>
+                                        <span id="p1-time-1">Reception</span>
+                                    </div>
+                                    <div class="timeline-row">
+                                        <span class="timeline-time">11:30 AM</span>
+                                        <span id="p1-time-2">Ceremony</span>
+                                    </div>
+                                    <div class="timeline-row">
+                                        <span class="timeline-time">12:30 PM</span>
+                                        <span id="p1-time-3">Banquet</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-right">
-                            <div class="info-header" id="p1-timeline-header">Timeline</div>
-                            <div class="info-details">
-                                <div class="timeline-row">
-                                    <span class="timeline-time">11:00 AM</span>
-                                    <span id="p1-time-1">Reception</span>
-                                </div>
-                                <div class="timeline-row">
-                                    <span class="timeline-time">11:30 AM</span>
-                                    <span id="p1-time-2">Ceremony</span>
-                                </div>
-                                <div class="timeline-row">
-                                    <span class="timeline-time">12:30 PM</span>
-                                    <span id="p1-time-3">Banquet</span>
-                                </div>
-                            </div>
+                        <div class="footer-bar">
+                            <span id="p1-footer-1">The Best Day Ever</span>
+                            <span>▪</span>
+                            <!-- 穩定的行事曆按鈕 -->
+                            <a id="special-calendar-btn" class="calendar-btn" href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Eric%20%26%20Elly's%20Wedding&dates=20260403T040000Z/20260403T070000Z&details=We%20can't%20wait%20to%20celebrate%20with%20you!&location=PARC88%2C%20Hong%20Kong%20Science%20Park" target="_blank" title="Add to Google Calendar">
+                                Save the Date 📅
+                            </a>
+                            <span>▪</span>
+                            <span id="p1-footer-3">The Best Day Ever</span>
                         </div>
                     </div>
+                </div>
 
-                    <div class="footer-bar">
-                        <span id="p1-footer-1">The Best Day Ever</span>
-                        <span>▪</span>
-                        <span id="p1-footer-2">The Best Day Ever</span>
-                        <span>▪</span>
-                        <span id="p1-footer-3">The Best Day Ever</span>
+                <!-- 內頁左側：改回優雅的空白浮水印，替代相片集 -->
+                <div class="card card-inside-left">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.15;">
+                        <div style="font-family: 'UnifrakturMaguntia', cursive; font-size: 5rem; margin-bottom: 10px; color: #1a1a1a;">E & E</div>
+                        <div style="font-family: 'Antonio', sans-serif; letter-spacing: 4px; font-size: 1rem; color: #1a1a1a;">SAVE THE DATE</div>
                     </div>
                 </div>
+                
             </div>
             
         </div>
@@ -512,118 +560,67 @@
             
             const content = {
                 en: {
-                    p1Weather: "Weather: Sunny",
-                    p1Label: "Extra! Extra!",
-                    p1Masthead: "Wedding Post",
-                    p1Loc: "London, UK",
-                    p1Date: "Friday, April 3, 2026",
-                    p1Subhead: "begin their journey",
-                    p1Caption: "▲ Hover to reveal colour. Pictured: The happy couple in London.",
-                    p1VenueHeader: "The Venue",
-                    p1Address: "Shops S040A G/F Lakeside 2,<br>10 Science Park West Avenue,<br>Phase 2, HK Science Park,<br>Pak Shek Kok, NT",
-                    p1TimelineHeader: "Timeline",
-                    p1Time1: "Reception",
-                    p1Time2: "Ceremony",
-                    p1Time3: "Banquet",
-                    p1Footer: "The Best Day Ever",
-                    
-                    transEar1: "Local News",
-                    label: "Travel Guide",
-                    title: "Transportation",
-                    loc: "Hong Kong Science Park",
-                    sub: "Getting There",
-                    header: "How to get to PARC88",
-                    mtrTitle: "By MTR & Bus",
-                    mtrText: "Take the MTR to <strong>University Station (Exit B)</strong>. Then take KMB Bus <strong>272K</strong> or Green Minibus <strong>27A</strong> to Science Park.",
-                    busTitle: "By Bus",
-                    busText: "Routes available: <strong>272K</strong> (University Stn), <strong>272A</strong> (University Stn), <strong>272S</strong> (Diamond Hill/Kwun Tong).",
-                    carTitle: "Parking Info",
-                    carText: "Guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.",
-                    footer1: "Safe Travels",
-                    footer2: "See You There",
-                    scrollTip: "Swipe or click dots to flip pages →"
+                    p1Weather: "Weather: Sunny & Joyful", p1Label: "Extra! Extra!", p1Masthead: "Wedding Post", p1Loc: "Hong Kong", p1Date: "Friday, April 3, 2026",
+                    p1Subhead: "begin their journey", p1Caption: "Pictured: The happy couple in London.",
+                    p1VenueHeader: "The Venue", p1Address: "Shops S040A G/F Lakeside 2,<br>10 Science Park West Avenue,<br>Phase 2, HK Science Park,<br>Pak Shek Kok, NT",
+                    p1TimelineHeader: "Timeline", p1Time1: "Reception", p1Time2: "Ceremony", p1Time3: "Banquet",
+                    p1Footer1: "The Best Day Ever", p1Footer3: "The Best Day Ever",
+
+                    transEar1: "Local News", label: "Travel Guide", title: "Transportation", loc: "Hong Kong Science Park", sub: "Getting There", header: "How to get to PARC88",
+                    mtrTitle: "By MTR & Bus", mtrText: "Take the MTR to <strong>University Station (Exit B)</strong>. Then take KMB Bus <strong>272K</strong> or Green Minibus <strong>27A</strong> to Science Park.",
+                    busTitle: "By Bus", busText: "Routes available: <strong>272K</strong> (University Stn), <strong>272A</strong> (University Stn), <strong>272S</strong> (Diamond Hill/Kwun Tong).",
+                    carTitle: "Parking Info", carText: "Paid guest parking is available at <strong>Phase 2 Car Park</strong> (Basement). Electric vehicle charging stations are located on B2 floor.",
+                    footer1: "Safe Travels", footer2: "See You There", scrollTip: "Swipe or click dots to flip pages →"
                 },
                 zh: {
-                    p1Weather: "天氣：晴朗",
-                    p1Label: "號外！號外！",
-                    p1Masthead: "婚禮囍報",
-                    p1Loc: "英國倫敦",
-                    p1Date: "2026年4月3日 (星期五)",
-                    p1Subhead: "展開人生新篇章",
-                    p1Caption: "▲ 長按或游標懸停顯示彩色。圖示：一對準新人於倫敦的浪漫合影。",
-                    p1VenueHeader: "婚禮場地",
-                    p1Address: "新界白石角香港科學園第二期<br>科技大道西10號<br>湖畔2座地下S040A舖",
-                    p1TimelineHeader: "婚禮流程",
-                    p1Time1: "迎賓",
-                    p1Time2: "證婚儀式",
-                    p1Time3: "婚宴",
-                    p1Footer: "最美好的一天",
-                    
-                    transEar1: "本地資訊",
-                    label: "交通指南",
-                    title: "交通資訊",
-                    loc: "香港科學園",
-                    sub: "前往方法",
-                    header: "前往 PARC88",
-                    mtrTitle: "港鐵及巴士",
-                    mtrText: "乘搭港鐵至<strong>大學站（B出口）</strong>，轉乘九巴 <strong>272K</strong> 或綠色專線小巴 <strong>27A</strong> 前往科學園。",
-                    busTitle: "巴士",
-                    busText: "可選路線：<strong>272K</strong>（大學站）、<strong>272A</strong>（大學站）、<strong>272S</strong>（鑽石山/觀塘）。",
-                    carTitle: "泊車資訊",
-                    carText: "訪客可停泊於<strong>二期停車場</strong>（地庫）。B2層設有電動車充電站。",
-                    footer1: "旅途愉快",
-                    footer2: "到時見",
-                    scrollTip: "左右滑動或點擊翻頁 →"
+                    p1Weather: "天氣：晴朗喜樂", p1Label: "號外！號外！", p1Masthead: "婚禮囍報", p1Loc: "香港", p1Date: "2026年4月3日 (星期五)",
+                    p1Subhead: "展開人生新篇章", p1Caption: "圖示：一對準新人於倫敦的美麗留影。",
+                    p1VenueHeader: "婚禮場地", p1Address: "新界白石角香港科學園第二期<br>科技大道西10號<br>湖畔2座地下S040A舖",
+                    p1TimelineHeader: "婚禮流程", p1Time1: "迎賓", p1Time2: "證婚儀式", p1Time3: "婚宴",
+                    p1Footer1: "最美好的一天", p1Footer3: "最美好的一天",
+
+                    transEar1: "本地資訊", label: "交通指南", title: "交通資訊", loc: "香港科學園", sub: "前往方法", header: "前往 PARC88",
+                    mtrTitle: "港鐵及巴士", mtrText: "乘搭港鐵至<strong>大學站（B出口）</strong>，轉乘九巴 <strong>272K</strong> 或綠色專線小巴 <strong>27A</strong> 前往科學園。",
+                    busTitle: "巴士", busText: "可選路線：<strong>272K</strong>（大學站）、<strong>272A</strong>（大學站）、<strong>272S</strong>（鑽石山/觀塘）。",
+                    carTitle: "泊車資訊", carText: "訪客可使用<strong>二期停車場</strong>（地庫）的收費時租車位。B2層設有電動車充電站。",
+                    footer1: "旅途愉快", footer2: "到時見", scrollTip: "左右滑動或點擊翻頁 →"
                 }
             };
 
             const lang = isChinese ? content.zh : content.en;
 
-            // Update content
-            setText('p1-weather', lang.p1Weather);
-            setText('p1-label', lang.p1Label);
-            setText('p1-masthead', lang.p1Masthead);
-            setText('p1-loc', lang.p1Loc);
-            setText('p1-date', lang.p1Date);
-            setText('p1-subhead', lang.p1Subhead);
-            setText('p1-caption', lang.p1Caption);
-            setText('p1-venue-header', lang.p1VenueHeader);
-            setText('p1-address', lang.p1Address, true);
-            setText('p1-timeline-header', lang.p1TimelineHeader);
-            setText('p1-time-1', lang.p1Time1);
-            setText('p1-time-2', lang.p1Time2);
-            setText('p1-time-3', lang.p1Time3);
-            setText('p1-footer-1', lang.p1Footer);
-            setText('p1-footer-2', lang.p1Footer);
-            setText('p1-footer-3', lang.p1Footer);
+            // Front Page
+            setText('p1-weather', lang.p1Weather); setText('p1-label', lang.p1Label); setText('p1-masthead', lang.p1Masthead); setText('p1-loc', lang.p1Loc); setText('p1-date', lang.p1Date);
+            setText('p1-subhead', lang.p1Subhead); setText('p1-caption', lang.p1Caption); setText('p1-venue-header', lang.p1VenueHeader); setText('p1-address', lang.p1Address, true);
+            setText('p1-timeline-header', lang.p1TimelineHeader); setText('p1-time-1', lang.p1Time1); setText('p1-time-2', lang.p1Time2); setText('p1-time-3', lang.p1Time3);
+            setText('p1-footer-1', lang.p1Footer1); setText('p1-footer-3', lang.p1Footer3);
+            
+            // Calendar Button
+            const calBtn = document.getElementById('special-calendar-btn');
+            if (calBtn) {
+                calBtn.innerText = isChinese ? "加入行事曆 📅" : "Save the Date 📅";
+                if (isChinese) {
+                    calBtn.href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Eric%20%26%20Elly's%20Wedding&dates=20260403T040000Z/20260403T070000Z&details=%E6%9C%9F%E5%BE%85%E8%88%87%E6%82%A8%E5%85%B1%E5%90%8C%E6%85%B6%E7%A5%9D%EF%BC%81&location=PARC88%2C%20Hong%20Kong%20Science%20Park&ctz=Asia/Hong_Kong";
+                } else {
+                    calBtn.href = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Eric%20%26%20Elly's%20Wedding&dates=20260403T040000Z/20260403T070000Z&details=We%20can't%20wait%20to%20celebrate%20with%20you!&location=PARC88%2C%20Hong%20Kong%20Science%20Park";
+                }
+            }
 
-            setText('trans-ear1', lang.transEar1);
-            setText('trans-label', lang.label);
-            setText('trans-title', lang.title);
-            setText('trans-loc', lang.loc);
-            setText('trans-sub', lang.sub);
-            setText('trans-header', lang.header);
-            setText('mtr-title', lang.mtrTitle);
-            setText('mtr-text', lang.mtrText, true);
-            setText('bus-title', lang.busTitle);
-            setText('bus-text', lang.busText, true);
-            setText('car-title', lang.carTitle);
-            setText('car-text', lang.carText, true);
-            setText('footer-1', lang.footer1);
-            setText('footer-2', lang.footer2);
-            setText('footer-3', lang.footer1);
+            // Transport Page
+            setText('trans-ear1', lang.transEar1); setText('trans-label', lang.label); setText('trans-title', lang.title); setText('trans-loc', lang.loc); setText('trans-sub', lang.sub);
+            setText('trans-header', lang.header); setText('mtr-title', lang.mtrTitle); setText('mtr-text', lang.mtrText, true); setText('bus-title', lang.busTitle); setText('bus-text', lang.busText, true);
+            setText('car-title', lang.carTitle); setText('car-text', lang.carText, true); setText('footer-1', lang.footer1); setText('footer-2', lang.footer2); setText('footer-3', lang.footer1);
 
             document.querySelector('.scroll-tip').innerHTML = lang.scrollTip;
 
             // Update Translate Buttons
             const btnText = isChinese ? "Translate 🇬🇧" : "Translate 🇭🇰";
-            setText('btn-trans-1', btnText);
-            setText('btn-trans-2', btnText);
+            document.querySelectorAll('.btn-translate').forEach(btn => btn.innerText = btnText);
         };
 
         // --- Book Page Turn Logic ---
         let currentPage = 0;
-        const cardFront = document.querySelector('.card-front');
+        const cardFrontWrapper = document.getElementById('front-page-wrapper');
         const dot0 = document.getElementById('dot-0');
         const dot1 = document.getElementById('dot-1');
 
@@ -632,42 +629,31 @@
             
             currentPage = index;
             
-            // 重置動畫狀態
-            cardFront.classList.remove('turn-forward', 'turn-backward');
-            void cardFront.offsetWidth; 
+            cardFrontWrapper.classList.remove('turn-forward', 'turn-backward');
+            void cardFrontWrapper.offsetWidth; 
 
             if (currentPage === 1) {
-                cardFront.classList.add('turn-forward');
+                cardFrontWrapper.classList.add('turn-forward');
                 dot0.classList.remove('active');
                 dot1.classList.add('active');
             } else {
-                cardFront.classList.add('turn-backward');
+                cardFrontWrapper.classList.add('turn-backward');
                 dot1.classList.remove('active');
                 dot0.classList.add('active');
             }
         };
 
         // Touch Swipe Handling for Flip
-        let touchStartX = 0;
-        let touchEndX = 0;
+        let touchStartX = 0; let touchEndX = 0;
         const flipScene = document.getElementById('flip-scene');
 
-        flipScene.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        flipScene.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
+        flipScene.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        flipScene.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
 
         function handleSwipe() {
             const swipeThreshold = 50; 
-            if (touchStartX - touchEndX > swipeThreshold) {
-                flipToPage(1);
-            } else if (touchEndX - touchStartX > swipeThreshold) {
-                flipToPage(0);
-            }
+            if (touchStartX - touchEndX > swipeThreshold) { flipToPage(1); } 
+            else if (touchEndX - touchStartX > swipeThreshold) { flipToPage(0); }
         }
     </script>
 </body>
